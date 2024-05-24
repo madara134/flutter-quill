@@ -118,7 +118,7 @@ Color stringToColor(String? s, [Color? originalColor]) {
   }
 
   if (!s.startsWith('#')) {
-    throw UnsupportedError('Color code not supported');
+    return Colors.black;
   }
 
   var hex = s.replaceFirst('#', '');

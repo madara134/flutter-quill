@@ -809,7 +809,7 @@ class QuillRawEditorState extends EditorState
         case 3:
           return defaultStyles!.h3!.verticalSpacing;
         default:
-          throw ArgumentError('Invalid level $level');
+          return defaultStyles!.h3!.verticalSpacing;
       }
     }
 
