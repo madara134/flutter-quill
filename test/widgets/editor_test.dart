@@ -21,15 +21,12 @@ void main() {
   group('QuillEditor', () {
     testWidgets('Keyboard entered text is stored in document', (tester) async {
       await tester.pumpWidget(
-        QuillProvider(
-          configurations: QuillConfigurations(controller: controller),
-          child: MaterialApp(
-            home: QuillEditor.basic(
+        MaterialApp(
+          home: QuillEditor.basic(
+            // ignore: avoid_redundant_argument_values
+            configurations: QuillEditorConfigurations(
+              controller: controller,
               // ignore: avoid_redundant_argument_values
-              configurations: const QuillEditorConfigurations(
-                // ignore: avoid_redundant_argument_values
-                readOnly: false,
-              ),
             ),
           ),
         ),
@@ -43,24 +40,19 @@ void main() {
       String? latestUri;
       await tester.pumpWidget(
         MaterialApp(
-          home: QuillProvider(
-            configurations: QuillConfigurations(
+          home: QuillEditor(
+            focusNode: FocusNode(),
+            scrollController: ScrollController(),
+            configurations: QuillEditorConfigurations(
               controller: controller,
-            ),
-            child: QuillEditor(
-              focusNode: FocusNode(),
-              scrollController: ScrollController(),
-              configurations: QuillEditorConfigurations(
-                // ignore: avoid_redundant_argument_values
-                readOnly: false,
-                autoFocus: true,
-                expands: true,
-                contentInsertionConfiguration: ContentInsertionConfiguration(
-                  onContentInserted: (content) {
-                    latestUri = content.uri;
-                  },
-                  allowedMimeTypes: <String>['image/gif'],
-                ),
+              // ignore: avoid_redundant_argument_values
+              autoFocus: true,
+              expands: true,
+              contentInsertionConfiguration: ContentInsertionConfiguration(
+                onContentInserted: (content) {
+                  latestUri = content.uri;
+                },
+                allowedMimeTypes: <String>['image/gif'],
               ),
             ),
           ),
@@ -120,21 +112,16 @@ void main() {
     testWidgets('custom context menu builder', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: QuillProvider(
-            configurations: QuillConfigurations(
+          home: QuillEditor(
+            focusNode: FocusNode(),
+            scrollController: ScrollController(),
+            // ignore: avoid_redundant_argument_values
+            configurations: QuillEditorConfigurations(
               controller: controller,
-            ),
-            child: QuillEditor(
-              focusNode: FocusNode(),
-              scrollController: ScrollController(),
               // ignore: avoid_redundant_argument_values
-              configurations: QuillEditorConfigurations(
-                // ignore: avoid_redundant_argument_values
-                readOnly: false,
-                autoFocus: true,
-                expands: true,
-                contextMenuBuilder: customBuilder,
-              ),
+              autoFocus: true,
+              expands: true,
+              contextMenuBuilder: customBuilder,
             ),
           ),
         ),

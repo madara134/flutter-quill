@@ -1,7 +1,7 @@
 import 'dart:collection';
 
-import '../../../widgets/embeds.dart';
-import '../../quill_delta.dart';
+import '../../../../quill_delta.dart';
+import '../../../widgets/quill/embeds.dart';
 import '../attribute.dart';
 import '../style.dart';
 import 'container.dart';
@@ -19,7 +19,7 @@ import 'line.dart';
 /// considered [mounted] when the [parent] property is not `null`.
 abstract base class Node extends LinkedListEntry<Node> {
   /// Current parent of this node. May be null if this node is not mounted.
-  Container? parent;
+  QuillContainer? parent;
 
   /// The style attributes
   /// Note: This is not the same as style attribute of css
@@ -141,12 +141,12 @@ abstract base class Node extends LinkedListEntry<Node> {
 }
 
 /// Root node of document tree.
-base class Root extends Container<Container<Node?>> {
+base class Root extends QuillContainer<QuillContainer<Node?>> {
   @override
   Node newInstance() => Root();
 
   @override
-  Container<Node?> get defaultChild => Line();
+  QuillContainer<Node?> get defaultChild => Line();
 
   @override
   Delta toDelta() => children

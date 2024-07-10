@@ -137,6 +137,27 @@ class FlutterQuillLocalizationsAr extends FlutterQuillLocalizations {
   String get headerStyle => 'ستايل العنوان';
 
   @override
+  String get normal => 'عادي';
+
+  @override
+  String get heading1 => 'ترويسة ١';
+
+  @override
+  String get heading2 => 'ترويسة ٢';
+
+  @override
+  String get heading3 => 'ترويسة ٣';
+
+  @override
+  String get heading4 => 'ترويسة ٤';
+
+  @override
+  String get heading5 => 'ترويسة ٥';
+
+  @override
+  String get heading6 => 'ترويسة ٦';
+
+  @override
   String get numberedList => 'قائمة مرقمة';
 
   @override
@@ -200,6 +221,11 @@ class FlutterQuillLocalizationsAr extends FlutterQuillLocalizations {
   String get savedUsingLocalStorage => 'تم الحفظ باستخدام وحدة التخزين المحلية';
 
   @override
+  String theImageHasBeenSavedAt(String imagePath) {
+    return 'The image has been saved at: $imagePath';
+  }
+
+  @override
   String get errorWhileSavingImage => 'حدث خطأ أثناء حفظ الصورة';
 
   @override
@@ -226,4 +252,22 @@ class FlutterQuillLocalizationsAr extends FlutterQuillLocalizations {
 
   @override
   String get insertImage => 'إدراج صورة';
+
+  @override
+  String get pickAPhotoFromYourGallery => 'اختيار صورة من معرض الصور';
+
+  @override
+  String get takeAPhotoUsingYourCamera => 'التقاط صورة باستخدام الكاميرا';
+
+  @override
+  String get pasteAPhotoUsingALink => 'لصق صورة باستخدام رابط';
+
+  @override
+  String get pickAVideoFromYourGallery => 'اختيار فيديو من معرض الفيديو';
+
+  @override
+  String get recordAVideoUsingYourCamera => 'تسجيل فيديو باستخدام الكاميرا';
+
+  @override
+  String get pasteAVideoUsingALink => 'لصق فيديو باستخدام رابط';
 }

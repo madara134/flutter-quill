@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
 
-import '../../../widgets/embeds.dart';
-import '../../quill_delta.dart';
+import '../../../../quill_delta.dart';
+import '../../../widgets/quill/embeds.dart';
 import '../../structs/offset_value.dart';
 import '../attribute.dart';
 import '../style.dart';
@@ -19,7 +19,7 @@ import 'node.dart';
 ///
 /// When a line contains an embed, it fully occupies the line, no other embeds
 /// or text nodes are allowed.
-base class Line extends Container<Leaf?> {
+base class Line extends QuillContainer<Leaf?> {
   @override
   Leaf get defaultChild => QuillText();
 
@@ -362,7 +362,7 @@ base class Line extends Container<Leaf?> {
     void handle(Style style) {
       for (final attr in result.values) {
         if (!style.containsKey(attr.key) ||
-            (style.attributes[attr.key] != attr.value)) {
+            (style.attributes[attr.key]?.value != attr.value)) {
           excluded.add(attr);
         }
       }
@@ -390,6 +390,7 @@ base class Line extends Container<Leaf?> {
     final remaining = len - local;
     if (remaining > 0 && nextLine != null) {
       final rest = nextLine!.collectStyle(0, remaining);
+      result = result.mergeAll(rest);
       handle(rest);
     }
 
@@ -406,20 +407,20 @@ base class Line extends Container<Leaf?> {
     final data = queryChild(offset, true);
     var node = data.node as Leaf?;
     if (node != null) {
-      var pos = 0;
-      pos = node.length - data.offset;
+      var pos = math.min(local, node.length - data.offset);
       if (node is QuillText && node.style.isNotEmpty) {
-        result.add(OffsetValue(beg, node.style, node.length));
+        result.add(OffsetValue(beg, node.style, pos));
       } else if (node.value is Embeddable) {
-        result.add(OffsetValue(beg, node.value as Embeddable, node.length));
+        result.add(OffsetValue(beg, node.value as Embeddable, pos));
       }
+
       while (!node!.isLast && pos < local) {
         node = node.next as Leaf;
+        final span = math.min(local - pos, node.length);
         if (node is QuillText && node.style.isNotEmpty) {
-          result.add(OffsetValue(pos + beg, node.style, node.length));
+          result.add(OffsetValue(pos + beg, node.style, span));
         } else if (node.value is Embeddable) {
-          result.add(
-              OffsetValue(pos + beg, node.value as Embeddable, node.length));
+          result.add(OffsetValue(pos + beg, node.value as Embeddable, span));
         }
         pos += node.length;
       }

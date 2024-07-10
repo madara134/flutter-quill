@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../models/documents/attribute.dart';
-import '../text_block.dart';
+import '../../../flutter_quill.dart';
+import '../quill/text_block.dart';
 
 class QuillEditorNumberPoint extends StatelessWidget {
   const QuillEditorNumberPoint({
@@ -11,9 +11,11 @@ class QuillEditorNumberPoint extends StatelessWidget {
     required this.style,
     required this.width,
     required this.attrs,
+    this.textAlign,
     this.withDot = true,
     this.padding = 0.0,
     super.key,
+    this.backgroundColor,
   });
 
   final int index;
@@ -24,6 +26,8 @@ class QuillEditorNumberPoint extends StatelessWidget {
   final Map<String, Attribute> attrs;
   final bool withDot;
   final double padding;
+  final Color? backgroundColor;
+  final TextAlign? textAlign;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +40,14 @@ class QuillEditorNumberPoint extends StatelessWidget {
         alignment: AlignmentDirectional.topEnd,
         width: width,
         padding: EdgeInsetsDirectional.only(end: padding),
-        child: Text(withDot ? '$s.' : s, style: style),
+        color: backgroundColor,
+        child: context.quillEditorConfigurations?.elementOptions.orderedList
+                .customWidget ??
+            Text(
+              withDot ? '$s.' : s,
+              style: style,
+              textAlign: textAlign,
+            ),
       );
     }
     if (attrs.containsKey(Attribute.indent.key)) {
@@ -67,7 +78,14 @@ class QuillEditorNumberPoint extends StatelessWidget {
       alignment: AlignmentDirectional.topEnd,
       width: width,
       padding: EdgeInsetsDirectional.only(end: padding),
-      child: Text(withDot ? '$s.' : s, style: style),
+      color: backgroundColor,
+      child: context.quillEditorConfigurations?.elementOptions.orderedList
+              .customWidget ??
+          Text(
+            withDot ? '$s.' : s,
+            style: style,
+            textAlign: textAlign,
+          ),
     );
   }
 

@@ -128,13 +128,34 @@ class FlutterQuillLocalizationsPt extends FlutterQuillLocalizations {
   String get alignRight => 'Align right';
 
   @override
-  String get justifyWinWidth => 'Justify win width';
+  String get justifyWinWidth => 'Justify';
 
   @override
   String get textDirection => 'Text direction';
 
   @override
   String get headerStyle => 'Header style';
+
+  @override
+  String get normal => 'Normal';
+
+  @override
+  String get heading1 => 'Heading 1';
+
+  @override
+  String get heading2 => 'Heading 2';
+
+  @override
+  String get heading3 => 'Heading 3';
+
+  @override
+  String get heading4 => 'Heading 4';
+
+  @override
+  String get heading5 => 'Heading 5';
+
+  @override
+  String get heading6 => 'Heading 6';
 
   @override
   String get numberedList => 'Numbered list';
@@ -201,6 +222,11 @@ class FlutterQuillLocalizationsPt extends FlutterQuillLocalizations {
       'Guardado através do armazenamento local';
 
   @override
+  String theImageHasBeenSavedAt(String imagePath) {
+    return 'The image has been saved at: $imagePath';
+  }
+
+  @override
   String get errorWhileSavingImage => 'Erro a gravar imagem';
 
   @override
@@ -228,6 +254,24 @@ class FlutterQuillLocalizationsPt extends FlutterQuillLocalizations {
 
   @override
   String get insertImage => 'Inserir imagem';
+
+  @override
+  String get pickAPhotoFromYourGallery => 'Pick a photo from your gallery';
+
+  @override
+  String get takeAPhotoUsingYourCamera => 'Take a photo using your camera';
+
+  @override
+  String get pasteAPhotoUsingALink => 'Paste a photo using a link';
+
+  @override
+  String get pickAVideoFromYourGallery => 'Pick a video from your gallery';
+
+  @override
+  String get recordAVideoUsingYourCamera => 'Record a video using your camera';
+
+  @override
+  String get pasteAVideoUsingALink => 'Paste a video using a link';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).

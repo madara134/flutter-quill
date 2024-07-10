@@ -137,6 +137,27 @@ class FlutterQuillLocalizationsUk extends FlutterQuillLocalizations {
   String get headerStyle => 'Стиль заголовка';
 
   @override
+  String get normal => 'Звичайний';
+
+  @override
+  String get heading1 => 'Заголовок 1';
+
+  @override
+  String get heading2 => 'Заголовок 2';
+
+  @override
+  String get heading3 => 'Заголовок 3';
+
+  @override
+  String get heading4 => 'Заголовок 4';
+
+  @override
+  String get heading5 => 'Заголовок 5';
+
+  @override
+  String get heading6 => 'Заголовок 6';
+
+  @override
   String get numberedList => 'Нумерований список';
 
   @override
@@ -201,6 +222,11 @@ class FlutterQuillLocalizationsUk extends FlutterQuillLocalizations {
       'Збережено за допомогою локального сховища';
 
   @override
+  String theImageHasBeenSavedAt(String imagePath) {
+    return 'The image has been saved at: $imagePath';
+  }
+
+  @override
   String get errorWhileSavingImage => 'Помилка при збереженні зображення';
 
   @override
@@ -229,4 +255,25 @@ class FlutterQuillLocalizationsUk extends FlutterQuillLocalizations {
 
   @override
   String get insertImage => 'Вставити зображення';
+
+  @override
+  String get pickAPhotoFromYourGallery => 'Оберіть фотографію з вашої галереї';
+
+  @override
+  String get takeAPhotoUsingYourCamera =>
+      'Створіть фотографію, використовуючи фотокамеру';
+
+  @override
+  String get pasteAPhotoUsingALink =>
+      'Вставте фотографію, використовуючи посилання';
+
+  @override
+  String get pickAVideoFromYourGallery => 'Оберіть відео з вашої галереї';
+
+  @override
+  String get recordAVideoUsingYourCamera =>
+      'Запишіть відео, використовуючи відеокамеру';
+
+  @override
+  String get pasteAVideoUsingALink => 'Вставте відео, використовуючи посилання';
 }

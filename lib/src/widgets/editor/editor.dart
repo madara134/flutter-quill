@@ -8,50 +8,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
-import '../../extensions/quill_provider.dart';
 import '../../l10n/widgets/localizations.dart';
-import '../../models/config/editor/configurations.dart';
-import '../../models/config/raw_editor/configurations.dart';
+import '../../models/config/editor/editor_configurations.dart';
+import '../../models/config/raw_editor/raw_editor_configurations.dart';
 import '../../models/documents/document.dart';
 import '../../models/documents/nodes/container.dart' as container_node;
 import '../../models/documents/nodes/leaf.dart';
-import '../../models/structs/offset_value.dart';
 import '../../utils/platform.dart';
-import '../box.dart';
-import '../cursor.dart';
-import '../delegate.dart';
-import '../embeds.dart';
-import '../float_cursor.dart';
+import '../others/box.dart';
+import '../others/cursor.dart';
+import '../others/delegate.dart';
+import '../others/float_cursor.dart';
+import '../others/text_selection.dart';
+import '../quill/embeds.dart';
 import '../raw_editor/raw_editor.dart';
-import '../text_selection.dart';
 import '../utils/provider.dart';
 import 'editor_builder.dart';
-
-/// Base interface for the editor state which defines contract used by
-/// various mixins.
-abstract class EditorState extends State<QuillRawEditor>
-    implements TextSelectionDelegate {
-  ScrollController get scrollController;
-
-  RenderEditor get renderEditor;
-
-  EditorTextSelectionOverlay? get selectionOverlay;
-
-  List<OffsetValue> get pasteStyleAndEmbed;
-
-  String get pastePlainText;
-
-  /// Controls the floating cursor animation when it is released.
-  /// The floating cursor is animated to merge with the regular cursor.
-  AnimationController get floatingCursorResetController;
-
-  /// Returns true if the editor has been marked as needing to be rebuilt.
-  bool get dirty;
-
-  bool showToolbar();
-
-  void requestKeyboard();
-}
 
 /// Base interface for editable render objects.
 abstract class RenderAbstractEditor implements TextLayoutMetrics {
@@ -155,8 +127,7 @@ class QuillEditor extends StatefulWidget {
 
   factory QuillEditor.basic({
     /// The configurations for the quill editor widget of flutter quill
-    QuillEditorConfigurations configurations =
-        const QuillEditorConfigurations(),
+    required QuillEditorConfigurations configurations,
     FocusNode? focusNode,
     ScrollController? scrollController,
   }) {
@@ -257,13 +228,15 @@ class QuillEditorState extends State<QuillEditor>
           child: QuillRawEditor(
             key: _editorKey,
             configurations: QuillRawEditorConfigurations(
-              controller: context.requireQuillController,
+              controller: configurations.controller,
               focusNode: widget.focusNode,
               scrollController: widget.scrollController,
               scrollable: configurations.scrollable,
               scrollBottomInset: configurations.scrollBottomInset,
               padding: configurations.padding,
-              isReadOnly: configurations.readOnly,
+              readOnly: configurations.readOnly,
+              checkBoxReadOnly: configurations.checkBoxReadOnly,
+              disableClipboard: configurations.disableClipboard,
               placeholder: configurations.placeholder,
               onLaunchUrl: configurations.onLaunchUrl,
               contextMenuBuilder: showSelectionToolbar
@@ -305,6 +278,7 @@ class QuillEditorState extends State<QuillEditor>
               customRecognizerBuilder: configurations.customRecognizerBuilder,
               floatingCursorDisabled: configurations.floatingCursorDisabled,
               onImagePaste: configurations.onImagePaste,
+              onGifPaste: configurations.onGifPaste,
               customShortcuts: configurations.customShortcuts,
               customActions: configurations.customActions,
               customLinkPrefixes: configurations.customLinkPrefixes,
@@ -313,6 +287,9 @@ class QuillEditorState extends State<QuillEditor>
               dialogTheme: configurations.dialogTheme,
               contentInsertionConfiguration:
                   configurations.contentInsertionConfiguration,
+              enableScribble: configurations.enableScribble,
+              onScribbleActivated: configurations.onScribbleActivated,
+              scribbleAreaInsets: configurations.scribbleAreaInsets,
             ),
           ),
         ),
@@ -332,10 +309,10 @@ class QuillEditorState extends State<QuillEditor>
       // that might interfere with the editor key behavior, such as
       // SingleChildScrollView. Thanks to @wliumelb for the workaround.
       // See issue https://github.com/singerdmx/flutter-quill/issues/304
-      return RawKeyboardListener(
-        onKey: (_) {},
+      return KeyboardListener(
+        onKeyEvent: (_) {},
         focusNode: FocusNode(
-          onKey: (node, event) => KeyEventResult.skipRemainingHandlers,
+          onKeyEvent: (node, event) => KeyEventResult.skipRemainingHandlers,
         ),
         child: editor,
       );
@@ -442,7 +419,7 @@ class _QuillEditorSelectionGestureDetectorBuilder
   }
 
   bool _isPositionSelected(TapUpDetails details) {
-    if (_state.context.requireQuillController.document.isEmpty()) {
+    if (_state.configurations.controller.document.isEmpty()) {
       return false;
     }
     final pos = renderEditor!.getPositionForOffset(details.globalPosition);
@@ -478,7 +455,7 @@ class _QuillEditorSelectionGestureDetectorBuilder
   }
 
   bool isShiftClick(PointerDeviceKind deviceKind) {
-    final pressed = RawKeyboard.instance.keysPressed;
+    final pressed = HardwareKeyboard.instance.logicalKeysPressed;
     return deviceKind == PointerDeviceKind.mouse &&
         (pressed.contains(LogicalKeyboardKey.shiftLeft) ||
             pressed.contains(LogicalKeyboardKey.shiftRight));
@@ -764,8 +741,10 @@ class RenderEditor extends RenderEditableContainerBox
   }
 
   bool get _shiftPressed =>
-      RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.shiftLeft) ||
-      RawKeyboard.instance.keysPressed.contains(LogicalKeyboardKey.shiftRight);
+      HardwareKeyboard.instance.logicalKeysPressed
+          .contains(LogicalKeyboardKey.shiftLeft) ||
+      HardwareKeyboard.instance.logicalKeysPressed
+          .contains(LogicalKeyboardKey.shiftRight);
 
   void setStartHandleLayerLink(LayerLink value) {
     if (_startHandleLayerLink == value) {
@@ -1238,28 +1217,6 @@ class RenderEditor extends RenderEditableContainerBox
   @override
   Rect getLocalRectForCaret(TextPosition position) {
     final targetChild = childAtPosition(position);
-    // TODO: There is a bug here
-    // The provided text position is not in the current node
-    // 'package:flutter_quill/src/widgets/text_block.dart':
-    // text_block.dart:1
-    // Failed assertion: line 604 pos 12:
-    // 'container.containsOffset(position.offset)'
-    //     When the exception was thrown, this was the stack
-    // #2      RenderEditableTextBlock.globalToLocalPosition
-    // text_block.dart:604
-    // #3      RenderEditor.getLocalRectForCaret
-    // editor.dart:1230
-    // #4      RawEditorStateTextInputClientMixin._updateComposingRectIfNeeded
-    // raw_editor_state_text_input_client_mixin.dart:85
-    // #5      RawEditorStateTextInputClientMixin.openConnectionIfNeeded
-    // raw_editor_state_text_input_client_mixin.dart:70
-    // #6      RawEditorState.requestKeyboard
-    // raw_editor.dart:1428
-    // #7      QuillEditorState._requestKeyboard
-    // editor.dart:379
-    // #8      _QuillEditorSelectionGestureDetectorBuilder.onSingleTapUp
-    // editor.dart:538
-    // #9      _EditorTextSelectionGestureDetectorState._handleTapUp
     final localPosition = targetChild.globalToLocalPosition(position);
 
     final childLocalRect = targetChild.getLocalRectForCaret(localPosition);
@@ -1554,7 +1511,7 @@ class RenderEditableContainerBox extends RenderBox
         RenderBoxContainerDefaultsMixin<RenderEditableBox,
             EditableContainerParentData> {
   RenderEditableContainerBox({
-    required container_node.Container container,
+    required container_node.QuillContainer container,
     required this.textDirection,
     required this.scrollBottomInset,
     required EdgeInsetsGeometry padding,
@@ -1565,15 +1522,15 @@ class RenderEditableContainerBox extends RenderBox
     addAll(children);
   }
 
-  container_node.Container _container;
+  container_node.QuillContainer _container;
   TextDirection textDirection;
   EdgeInsetsGeometry _padding;
   double scrollBottomInset;
   EdgeInsets? _resolvedPadding;
 
-  container_node.Container get container => _container;
+  container_node.QuillContainer get container => _container;
 
-  void setContainer(container_node.Container c) {
+  void setContainer(container_node.QuillContainer c) {
     if (_container == c) {
       return;
     }

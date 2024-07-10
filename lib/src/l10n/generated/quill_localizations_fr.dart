@@ -137,6 +137,27 @@ class FlutterQuillLocalizationsFr extends FlutterQuillLocalizations {
   String get headerStyle => "Style d'en-tête";
 
   @override
+  String get normal => 'Normal';
+
+  @override
+  String get heading1 => 'Titre 1';
+
+  @override
+  String get heading2 => 'Titre 2';
+
+  @override
+  String get heading3 => 'Titre 3';
+
+  @override
+  String get heading4 => 'Titre 4';
+
+  @override
+  String get heading5 => 'Titre 5';
+
+  @override
+  String get heading6 => 'Titre 6';
+
+  @override
   String get numberedList => 'Liste numérotée';
 
   @override
@@ -201,6 +222,11 @@ class FlutterQuillLocalizationsFr extends FlutterQuillLocalizations {
       'Enregistré en utilisant le stockage local';
 
   @override
+  String theImageHasBeenSavedAt(String imagePath) {
+    return 'The image has been saved at: $imagePath';
+  }
+
+  @override
   String get errorWhileSavingImage =>
       "Erreur lors de l'enregistrement de l'image";
 
@@ -230,4 +256,26 @@ class FlutterQuillLocalizationsFr extends FlutterQuillLocalizations {
 
   @override
   String get insertImage => 'Insérer une image';
+
+  @override
+  String get pickAPhotoFromYourGallery =>
+      'Choisissez une photo dans votre galerie';
+
+  @override
+  String get takeAPhotoUsingYourCamera =>
+      'Prendre une photo avec votre appareil photo';
+
+  @override
+  String get pasteAPhotoUsingALink => "Coller une photo à l'aide d'un lien";
+
+  @override
+  String get pickAVideoFromYourGallery =>
+      'Choisissez une vidéo dans votre galerie';
+
+  @override
+  String get recordAVideoUsingYourCamera =>
+      'Enregistrez une vidéo en utilisant votre caméra';
+
+  @override
+  String get pasteAVideoUsingALink => "Coller une vidéo à l'aide d'un lien";
 }
