@@ -17,8 +17,7 @@ dynamic getFontSize(dynamic sizeValue) {
   assert(sizeValue is String);
   final fontSize = double.tryParse(sizeValue);
   if (fontSize == null) {
-    return 'normal';
-    // throw ArgumentError('Invalid size $sizeValue');
+    throw ArgumentError('Invalid size $sizeValue');
   }
   return fontSize;
 }
