@@ -65,7 +65,7 @@ class QuillEditorNumberPoint extends StatelessWidget {
 
     return Container(
       alignment: AlignmentDirectional.topEnd,
-      width: width,
+      width: width * level,
       padding: EdgeInsetsDirectional.only(end: padding),
       child: Text(withDot ? '$s.' : s, style: style),
     );
